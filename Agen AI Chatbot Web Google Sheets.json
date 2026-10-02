@@ -1,0 +1,161 @@
+{
+  "name": "Agen AI Chatbot Web Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 Saya adalah chatbot informasi program pelatihan. Saya siap membantu memberikan informasi mengenai nama program, materi, dan harga pelatihan. Silakan tanyakan program pelatihan yang ingin Anda ketahui.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -384,
+        -32
+      ],
+      "id": "cbc119b8-6241-4189-853a-00c4ae362ff1",
+      "name": "When chat message received",
+      "webhookId": "ab7aedb7-54fc-454f-ad96-5d9085f239af"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Anda adalah AI Assistant yang bertugas membantu pengguna mendapatkan informasi mengenai program pelatihan dan kursus.\n\nTugas Anda:\n1. Menjawab pertanyaan pengguna mengenai nama program pelatihan, jenis program, deskripsi pelatihan, materi yang tersedia, dan harga.\n2. Gunakan tool \"Get row(s) in sheet in Google Sheets\" untuk mengambil informasi yang dibutuhkan dari Google Sheets.\n3. Informasi mengenai program pelatihan dan harga harus berdasarkan data yang tersedia di Google Sheets.\n4. Jangan mengarang atau membuat informasi, harga, maupun program pelatihan yang tidak terdapat dalam Google Sheets.\n5. Jika informasi yang ditanyakan tidak ditemukan dalam Google Sheets, sampaikan dengan jujur bahwa informasi tersebut belum tersedia pada data yang diberikan.\n6. Jika pengguna menanyakan harga, tampilkan harga sesuai dengan data yang terdapat pada Google Sheets.\n7. Jika pengguna menanyakan deskripsi atau materi pelatihan, berikan informasi berdasarkan data pada Google Sheets.\n8. Jawab menggunakan bahasa Indonesia yang ramah, jelas, singkat, dan mudah dipahami.\n9. Jika pertanyaan pengguna tidak berkaitan dengan data pelatihan, jelaskan bahwa chatbot ini berfokus pada informasi program pelatihan dan kursus.\n10. Jangan memberikan informasi yang tidak terdapat dalam Google Sheets seolah-olah sebagai fakta.stant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "0c8d3475-07c9-4f00-a299-ba098ce58062",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -304,
+        176
+      ],
+      "id": "ba5ca72f-95d5-4b4e-b4b3-09bec94cc226",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "eQL57NeBdgz7pVms",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -160,
+        176
+      ],
+      "id": "350cff67-548c-43db-a3fa-a2e6d304eee3",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Gunakan tool ini untuk mengambil data program pelatihan, nama kursus, deskripsi materi, dan harga dari Google Sheets. Gunakan data dari spreadsheet sebagai sumber utama untuk menjawab pertanyaan pengguna mengenai program pelatihan dan harga. Jangan mengarang informasi yang tidak terdapat dalam spreadsheet.",
+        "documentId": {
+          "__rl": true,
+          "value": "1YFkLd3bj2cw-TjJAii1CrVWVTl4ZCZPdoxOikKSO4lk",
+          "mode": "list",
+          "cachedResultName": "data n8n",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YFkLd3bj2cw-TjJAii1CrVWVTl4ZCZPdoxOikKSO4lk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YFkLd3bj2cw-TjJAii1CrVWVTl4ZCZPdoxOikKSO4lk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -16,
+        176
+      ],
+      "id": "bfb8cb7f-4992-4627-a270-56eb00c547cb",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZHh4yLAeLRQ72bJZ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7125250a-6fa8-4b0b-a8a7-088e0016372e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "cWe5Pz6Mw6wEvZSb",
+  "tags": []
+}
